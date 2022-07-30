@@ -1,7 +1,11 @@
 <?php
+
 require_once './functions.php';
 
 $airports = require './airports.php';
+
+$url = $_SERVER['REQUEST_URI'];
+$postsPerPage = 5;
 
 // Filtering
 /**
@@ -10,6 +14,17 @@ $airports = require './airports.php';
  * (see Filtering tasks 1 and 2 below)
  */
 
+if (isset($_GET['filter_by_first_letter']))
+    $firstLetter = $_GET['filter_by_first_letter'];
+else $firstLetter = '';
+
+if (isset($_GET['filter_by_state']))
+    $state = $_GET['filter_by_state'];
+else $state = '';
+
+$filteredAirports = filterByLetter($airports, $firstLetter);
+$filteredAirports = filterByState($filteredAirports, $state);
+
 // Sorting
 /**
  * Here you need to check $_GET request if it has sorting key
@@ -17,12 +32,23 @@ $airports = require './airports.php';
  * (see Sorting task below)
  */
 
+if (isset($_GET['sort']))
+    $sortBy = $_GET['sort'];
+else $sortBy = '';
+
+$filteredAirports = sortByTag($filteredAirports, $sortBy);
+
 // Pagination
 /**
  * Here you need to check $_GET request if it has pagination key
  * and apply pagination logic
  * (see Pagination task below)
  */
+
+ if (isset($_GET['page']))
+     $currentPage = $_GET['page'];
+ else $currentPage = 1;
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -52,8 +78,8 @@ $airports = require './airports.php';
     <div class="alert alert-dark">
         Filter by first letter:
 
-        <?php foreach (getUniqueFirstLetters(require './airports.php') as $letter): ?>
-            <a href="#"><?= $letter ?></a>
+        <?php foreach (getUniqueFirstLetters($airports) as $letter): ?>
+            <a href="<?= editUrlParams($url, [['filter_by_first_letter', $letter], ['page', null]]); ?>"><?= $letter ?></a>
         <?php endforeach; ?>
 
         <a href="/" class="float-right">Reset all filters</a>
@@ -72,10 +98,10 @@ $airports = require './airports.php';
     <table class="table">
         <thead>
         <tr>
-            <th scope="col"><a href="#">Name</a></th>
-            <th scope="col"><a href="#">Code</a></th>
-            <th scope="col"><a href="#">State</a></th>
-            <th scope="col"><a href="#">City</a></th>
+            <th scope="col"><a href="<?= editUrlParams($url, [['sort', 'name']]); ?>">Name</a></th>
+            <th scope="col"><a href="<?= editUrlParams($url, [['sort', 'code']]); ?>">Code</a></th>
+            <th scope="col"><a href="<?= editUrlParams($url, [['sort', 'state']]); ?>">State</a></th>
+            <th scope="col"><a href="<?= editUrlParams($url, [['sort', 'city']]); ?>">City</a></th>
             <th scope="col">Address</th>
             <th scope="col">Timezone</th>
         </tr>
@@ -91,16 +117,18 @@ $airports = require './airports.php';
              - when you apply filter_by_state, than filter_by_first_letter (see Filtering task #1) is not reset
                i.e. if you have filter_by_first_letter set you can additionally use filter_by_state
         -->
-        <?php foreach ($airports as $airport): ?>
-        <tr>
-            <td><?= $airport['name'] ?></td>
-            <td><?= $airport['code'] ?></td>
-            <td><a href="#"><?= $airport['state'] ?></a></td>
-            <td><?= $airport['city'] ?></td>
-            <td><?= $airport['address'] ?></td>
-            <td><?= $airport['timezone'] ?></td>
-        </tr>
-        <?php endforeach; ?>
+        <?php $start = ($currentPage-1)*$postsPerPage; ?>
+        <?php for ($i = $start; $i < $start + $postsPerPage; $i++): ?>
+            <?php if (!isset($filteredAirports[$i])) break; ?>
+            <tr>
+                <td><?= $filteredAirports[$i]['name'] ?></td>
+                <td><?= $filteredAirports[$i]['code'] ?></td>
+                <td><a href="<?= editUrlParams($url, [['filter_by_state', $filteredAirports[$i]['state']], ['page', null]]); ?>"><?= $filteredAirports[$i]['state'] ?></a></td>
+                <td><?= $filteredAirports[$i]['city'] ?></td>
+                <td><?= $filteredAirports[$i]['address'] ?></td>
+                <td><?= $filteredAirports[$i]['timezone'] ?></td>
+            </tr>
+        <?php endfor; ?>
         </tbody>
     </table>
 
@@ -115,9 +143,18 @@ $airports = require './airports.php';
     -->
     <nav aria-label="Navigation">
         <ul class="pagination justify-content-center">
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <?php if ($currentPage > 1): ?>
+                <li class="page-item"><a class="page-link" href="<?= editUrlParams($url, [['page', 1]]); ?>">First</a></li>
+                <li class="page-item"><a class="page-link" href="<?= editUrlParams($url, [['page', $currentPage-1]]); ?>">Prev</a></li>
+                <li class="page-item"><a class="page-link" href="<?= editUrlParams($url, [['page', $currentPage-1]]); ?>"><?= $currentPage-1 ?></a></li>
+            <?php endif; ?>
+            <li class="page-item active"><a class="page-link" href="<?= editUrlParams($url, [['page', $currentPage]]); ?>"><?= $currentPage ?></a></li>
+            <?php $lastPage = ceil(count($filteredAirports) / $postsPerPage); ?>
+            <?php if ($currentPage < $lastPage): ?>
+                <li class="page-item"><a class="page-link" href="<?= editUrlParams($url, [['page', $currentPage+1]]); ?>"><?= $currentPage+1 ?></a></li>
+                <li class="page-item"><a class="page-link" href="<?= editUrlParams($url, [['page', $currentPage+1]]); ?>">Next</a></li>
+                <li class="page-item"><a class="page-link" href="<?= editUrlParams($url, [['page', $lastPage]]); ?>">Last</a></li>
+            <?php endif; ?>
         </ul>
     </nav>
 
