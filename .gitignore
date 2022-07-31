@@ -2,3 +2,4 @@
 .phpunit.result.cache
 vendor
 src/db/config.php
+src/oop/public/images/*
