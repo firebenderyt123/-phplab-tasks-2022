@@ -9,45 +9,53 @@ $postsPerPage = 5;
 
 // Filtering
 /**
- * Here you need to check $_GET request if it has any filtering
- * and apply filtering by First Airport Name Letter and/or Airport State
- * (see Filtering tasks 1 and 2 below)
- */
+* Here you need to check $_GET request if it has any filtering
+* and apply filtering by First Airport Name Letter and/or Airport State
+* (see Filtering tasks 1 and 2 below)
+*/
 
-if (isset($_GET['filter_by_first_letter']))
+if (isset($_GET['filter_by_first_letter'])) {
     $firstLetter = $_GET['filter_by_first_letter'];
-else $firstLetter = '';
+} else {
+    $firstLetter = '';
+}
 
-if (isset($_GET['filter_by_state']))
+if (isset($_GET['filter_by_state'])) {
     $state = $_GET['filter_by_state'];
-else $state = '';
+} else {
+    $state = '';
+}
 
 $filteredAirports = filterByLetter($airports, $firstLetter);
 $filteredAirports = filterByState($filteredAirports, $state);
 
 // Sorting
 /**
- * Here you need to check $_GET request if it has sorting key
- * and apply sorting
- * (see Sorting task below)
- */
+* Here you need to check $_GET request if it has sorting key
+* and apply sorting
+* (see Sorting task below)
+*/
 
-if (isset($_GET['sort']))
+if (isset($_GET['sort'])) {
     $sortBy = $_GET['sort'];
-else $sortBy = '';
+} else {
+    $sortBy = '';
+}
 
 $filteredAirports = sortByTag($filteredAirports, $sortBy);
 
 // Pagination
 /**
- * Here you need to check $_GET request if it has pagination key
- * and apply pagination logic
- * (see Pagination task below)
- */
+* Here you need to check $_GET request if it has pagination key
+* and apply pagination logic
+* (see Pagination task below)
+*/
 
- if (isset($_GET['page']))
-     $currentPage = $_GET['page'];
- else $currentPage = 1;
+if (isset($_GET['page'])) {
+    $currentPage = $_GET['page'];
+} else {
+    $currentPage = 1;
+}
 
 ?>
 <!doctype html>

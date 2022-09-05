@@ -14,8 +14,9 @@ function getUniqueFirstLetters(array $airports)
     $firstLetters = [];
     foreach ($airports as $airport) {
         $firstLetter = mb_strtoupper(mb_substr($airport['name'], 0, 1));
-        if (!in_array($firstLetter, $firstLetters))
+        if (!in_array($firstLetter, $firstLetters)) {
             array_push($firstLetters, $firstLetter);
+        }
     }
     sort($firstLetters);
 
@@ -31,8 +32,9 @@ function getUniqueFirstLetters(array $airports)
  */
 function filterByLetter(array $airports, string $letter)
 {
-    if (empty($letter))
+    if (empty($letter)) {
         return $airports;
+    }
 
     $result = [];
     foreach ($airports as $airport) {
@@ -50,8 +52,9 @@ function filterByLetter(array $airports, string $letter)
  */
 function filterByState(array $airports, string $state)
 {
-    if (empty($state))
+    if (empty($state)) {
         return $airports;
+    }
 
     $result = [];
     foreach ($airports as $airport) {
@@ -75,22 +78,23 @@ function sortByTag(array $airports, string $sortBy)
     if (empty($sortBy))
         return $airports;
 
-    if ($sortBy == 'name')
+    if ($sortBy == 'name') {
         usort($airports, function($a, $b) {
             return $a['name'] <=> $b['name'];
         });
-    else if ($sortBy == 'code')
+    } elseif ($sortBy == 'code') {
         usort($airports, function($a, $b) {
             return $a['code'] <=> $b['code'];
         });
-    else if ($sortBy == 'state')
+    } elseif ($sortBy == 'state') {
         usort($airports, function($a, $b) {
             return $a['state'] <=> $b['state'];
         });
-    else if ($sortBy == 'city')
+    } elseif ($sortBy == 'city') {
         usort($airports, function($a, $b) {
             return $a['city'] <=> $b['city'];
         });
+    }
     return $airports;
 }
 
@@ -105,18 +109,21 @@ function sortByTag(array $airports, string $sortBy)
 function editUrlParams($url, $params)
 {
     $isAnyParams = false;
-    if (!empty(preg_match('/\?/isu', $url)))
+    if (!empty(preg_match('/\?/isu', $url))) {
         $isAnyParams = true;
+    }
 
     foreach ($params as $param) {
         if (empty($param[1])) {
             if (!empty(preg_match('/' . $param[0] . '=/isu', $url))) {
                 $url = preg_replace('/&' . $param[0] . '=.*?($|(?=&))|' . $param[0] . '=.*?(&|$)/isu', '', $url);
             }
-        } else if (empty(preg_match('/' . $param[0] . '=/isu', $url))) {
-            if ($isAnyParams)
+        } elseif (empty(preg_match('/' . $param[0] . '=/isu', $url))) {
+            if ($isAnyParams) {
                 $url .= '&';
-            else $url .= '?';
+            } else {
+                $url .= '?';
+            }
             $url .= $param[0] . '=' . $param[1];
         } else {
             $url = preg_replace('/(?<=' . $param[0] . '=).*?(?=&|$)/isu', $param[1], $url);
