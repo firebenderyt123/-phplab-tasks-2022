@@ -3,6 +3,10 @@
 require '../../../vendor/autoload.php';
 
 use src\oop\app\src\ScrapperFactory;
+use src\oop\app\src\Transporters\CurlStrategy;
+use src\oop\app\src\Transporters\GuzzleAdapter;
+use src\oop\app\src\Parsers\FilmixParserStrategy;
+use src\oop\app\src\Parsers\KinoukrDomCrawlerParserAdapter;
 
 ?>
 
@@ -56,8 +60,3 @@ $kinoukrMovie = $scrapperFactory->create('kinoukr')->getMovie('https://kinoukr.c
 
 </body>
 </html>
-
-
-
-
-
