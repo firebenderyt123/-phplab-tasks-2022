@@ -27,13 +27,36 @@ require_once './pdo_ini.php';
 // cities
 $sql = <<<'SQL'
 CREATE TABLE `cities` (
-	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(50) NOT NULL COLLATE 'utf8_general_ci',
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `name` varchar(63),
 	PRIMARY KEY (`id`)
 );
 SQL;
 $pdo->exec($sql);
 
 // TODO states
+$sql = <<<'SQL'
+CREATE TABLE states (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `name` varchar(63),
+	PRIMARY KEY (`id`)
+);
+SQL;
+$pdo->exec($sql);
 
 // TODO airports
+$sql = <<<'SQL'
+CREATE TABLE airports (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `name` varchar(63) NOT NULL,
+    `code` varchar(3) NOT NULL,
+    `city_id` int(10) unsigned NOT NULL,
+    `state_id` int(10) unsigned NOT NULL,
+    `address` varchar(127) NOT NULL,
+    `timezone` varchar(31) NOT NULL,
+	PRIMARY KEY (`id`),
+    FOREIGN KEY (`city_id`)  REFERENCES `cities` (`id`),
+    FOREIGN KEY (`state_id`)  REFERENCES `states` (`id`)
+);
+SQL;
+$pdo->exec($sql);
